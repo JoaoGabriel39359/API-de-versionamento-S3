@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+ENV/
+env/
+build/
+dist/
+*.egg-info/
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Docker & LocalStack ---
+.localstack/
+volume/
+
+.env
+auth_key.txt
+secrets.py
+
+# --- Sistema Operacional ---
+.DS_Store
+Thumbs.db
