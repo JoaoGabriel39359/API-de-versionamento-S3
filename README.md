@@ -1,58 +1,102 @@
-🛰️ FastAPI S3 Versioning Manager
-Este projeto é uma API robusta desenvolvida para gerenciar o ciclo de vida de arquivos em um bucket Amazon S3, utilizando FastAPI e a biblioteca Boto3. O sistema foca em integridade de dados através de versionamento automático, permitindo restaurar versões anteriores e auditar mudanças.
+# S3 File Versioning & Audit API
 
-Para facilitar o desenvolvimento e testes, o ambiente é totalmente containerizado com Docker e utiliza o LocalStack para simular os serviços da AWS localmente.
+A FastAPI service for managing versioned files in Amazon S3, with recovery, logical deletion, and automated change auditing. The development environment runs entirely with Docker and LocalStack, so the workflow can be tested without an AWS account.
 
-🚀 Funcionalidades
-Upload de Arquivos: Salva arquivos no S3 gerando IDs de versão únicos.
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?style=flat-square&logo=fastapi&logoColor=white)
+![AWS S3](https://img.shields.io/badge/AWS-S3-FF9900?style=flat-square&logo=amazons3&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-LocalStack-2496ED?style=flat-square&logo=docker&logoColor=white)
 
-Listagem de Versões: Exibe o histórico completo de alterações de um arquivo.
+## What it solves
 
-Restore (Restauração): Promove uma versão antiga para ser a atual (IsLatest) sem perder o histórico.
+Object storage is simple until a file is overwritten or deleted accidentally. This API exposes a clear REST interface for the S3 version lifecycle and adds audit information that helps operators understand how files changed over time.
 
-Delete Logico: Suporte a Delete Markers, permitindo recuperar arquivos excluídos por acidente.
+## Capabilities
 
-Auditoria Automatizada: Endpoint que compara a versão atual com a anterior, analisando tamanho e tempo entre modificações.
+- Upload files with S3 versioning
+- List the complete version history of an object
+- Restore an earlier version without deleting history
+- Use delete markers for recoverable logical deletion
+- Compare the latest and previous versions
+- Audit file size and time between changes
+- Develop locally with a reproducible Docker environment
+- Explore and test endpoints through OpenAPI / Swagger
 
-🛠️ Tecnologias Utilizadas
-Python 3.12
+## Architecture
 
-FastAPI: Framework web de alta performance.
+```text
+Client
+  |
+  v
+FastAPI routes
+  |
+  +--> S3 service --> Amazon S3
+  |
+  +--> Audit service
+          
+Local development: Docker Compose + LocalStack
+```
 
-Boto3: SDK oficial da AWS para Python.
+## Tech stack
 
-Docker & Docker Compose: Isolamento de ambiente e orquestração.
+| Area | Technologies |
+|---|---|
+| API | Python 3.12, FastAPI |
+| Cloud integration | Boto3, Amazon S3 |
+| Local cloud | LocalStack |
+| Infrastructure | Docker, Docker Compose |
+| Documentation | OpenAPI / Swagger |
 
-LocalStack: Simulação de serviços AWS (S3).
+## Repository structure
 
-📂 Estrutura do Projeto
-Plaintext
+```text
 .
 ├── routes/
-│   └── routes.py      # Definição dos endpoints (APIRouter)
+│   └── routes.py       # REST endpoints
 ├── services/
-│   ├── s3_service.py  # Lógica de interação com AWS S3
-│   └── audit.py       # Lógica de análise e auditoria de dados
-├── main.py            # Ponto de entrada da aplicação
-├── Dockerfile         # Configuração da imagem Docker da API
-├── docker-compose.yml # Orquestração da API + LocalStack
-└── requirements.txt   # Dependências do projeto
+│   ├── s3_service.py   # S3 operations
+│   └── audit.py        # Version comparison and audit rules
+├── main.py
+├── Dockerfile
+├── docker-compose.yml
+└── requirements.txt
+```
 
-🔧 Como Rodar o Projeto
-Pré-requisitos
-Docker e Docker Compose instalados.
+## Run locally
 
-Passo a Passo
-Clone o repositório:
+### Prerequisites
 
-Bash
-git clone https://github.com/seu-usuario/fastapi-s3-manager.git
-cd fastapi-s3-manager
-Suba os containers:
+- Docker
+- Docker Compose
 
-Bash
-docker-compose up -d
-Isso iniciará a API na porta 8000 e o LocalStack na porta 4566.
+### Start the stack
 
-Acesse a Documentação (Swagger):
-Abra o navegador em: http://localhost:8000/docs
+```bash
+git clone https://github.com/JoaoGabriel39359/API-de-versionamento-S3.git
+cd API-de-versionamento-S3
+docker compose up --build
+```
+
+The API is available at `http://localhost:8000`, and its interactive documentation at `http://localhost:8000/docs`.
+
+## API workflow
+
+1. Upload an object.
+2. Update the same key to create another version.
+3. List its version history.
+4. Request an audit comparison.
+5. Restore a previous version or create a recoverable delete marker.
+
+## Engineering focus
+
+- Service modules isolate AWS-specific operations from HTTP routes.
+- S3 versioning preserves traceability and recovery options.
+- LocalStack makes integration development deterministic and inexpensive.
+- Docker Compose gives contributors a one-command environment.
+
+## Author
+
+**João Gabriel Vieira Barbosa**  
+Full-Stack Developer focused on Python, FastAPI, APIs, cloud integrations, and business automation.
+
+[GitHub profile](https://github.com/JoaoGabriel39359)
